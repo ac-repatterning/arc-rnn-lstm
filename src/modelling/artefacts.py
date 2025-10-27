@@ -1,7 +1,9 @@
 """Module artefacts.py"""
+import pandas as pd
 import tensorflow as tf
 
-import pandas as pd
+import src.elements.intermediary as itr
+import src.elements.master as mr
 
 
 class Artefacts:
@@ -17,7 +19,20 @@ class Artefacts:
 
         self.__arguments = arguments
 
-    def exc(self, model: tf.keras.src.models.Sequential):
+    def exc(self, model: tf.keras.src.models.Sequential, intermediary: itr.Intermediary, master: mr.Master) -> str:
+        """
+
+        :param model:
+        :param intermediary:
+        :param master:
+        :return:
+        """
 
         history = pd.DataFrame(data=model.history.history)
         history.info()
+
+        # Trying
+        intermediary.training.info()
+        master.training.info()
+
+        return 'in progress'
