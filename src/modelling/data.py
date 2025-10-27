@@ -44,7 +44,8 @@ class Data:
 
         return block
 
-    def __set_missing(self, data: pd.DataFrame) -> pd.DataFrame:
+    @staticmethod
+    def __set_missing(data: pd.DataFrame) -> pd.DataFrame:
         """
         Forward filling.  In contrast, the variational model inherently deals with missing data, hence
                           it does not include this type of step.
