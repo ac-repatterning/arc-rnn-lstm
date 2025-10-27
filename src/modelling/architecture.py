@@ -1,10 +1,9 @@
 """Module architecture.py"""
-
 import numpy as np
 import tensorflow as tf
 
-import src.modelling.sequencing
 import src.elements.intermediary as itr
+import src.modelling.sequencing
 
 
 class Architecture:
@@ -23,7 +22,7 @@ class Architecture:
         self.__epochs = self.__arguments.get('modelling').get('epochs')
         self.__batch_size = self.__arguments.get('modelling').get('batch_size')
 
-    def __model(self, x_tr: np.ndarray, y_tr: np.ndarray):
+    def __model(self, x_tr: np.ndarray, y_tr: np.ndarray) -> tf.keras.models.Sequential:
         """
 
         :param x_tr:
@@ -50,7 +49,7 @@ class Architecture:
 
         return architecture
 
-    def exc(self, intermediary: itr.Intermediary):
+    def exc(self, intermediary: itr.Intermediary) -> tf.keras.models.Sequential:
         """
 
         :param intermediary:
