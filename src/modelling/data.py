@@ -39,6 +39,8 @@ class Data:
             raise err from err
 
         block.reset_index(drop=True, inplace=True)
+        block.sort_values(by='timestamp', ascending=True, inplace=True)
+        block.drop_duplicates(subset='timestamp', keep='first', inplace=True)
 
         return block
 
