@@ -19,6 +19,7 @@ class Artefacts:
 
         self.__arguments = arguments
 
+    # noinspection PyUnresolvedReferences
     def exc(self, model: tf.keras.src.models.Sequential, intermediary: itr.Intermediary, master: mr.Master) -> str:
         """
 
