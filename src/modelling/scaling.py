@@ -1,7 +1,10 @@
-import pandas as pd
-import numpy as np
+import typing
 
+import numpy as np
+import pandas as pd
 import sklearn
+
+import src.elements.master as mr
 
 
 class Scaling:
@@ -30,7 +33,7 @@ class Scaling:
 
         return __data
 
-    def reference(self, blob: pd.DataFrame):
+    def preimage(self, blob: pd.DataFrame) -> typing.Tuple[pd.DataFrame, sklearn.preprocessing.MinMaxScaler]:
         """
 
         :param blob: The training data
@@ -47,14 +50,28 @@ class Scaling:
 
         return frame, scaler
 
-    def exc(self, blob: pd.DataFrame, scaler: sklearn.preprocessing.MinMaxScaler):
+    def image(self, blob: pd.DataFrame, scaler: sklearn.preprocessing.MinMaxScaler) -> pd.DataFrame:
         """
         For transforming data sets associated with the training data that built the scaler
 
-        :param blob:
+        :param blob: Includes that need to be transformed
         :param scaler: A scaler object
         """
 
         transforms = scaler.transform(blob.copy()[self.__features])
 
         return self.__restructure(structure=blob, transforms=transforms)
+
+    def exc(self, master: mr.Master) -> mr.Master:
+        """
+
+        :param master:
+        :return:
+        """
+
+        training, scaler = self.preimage(blob=master.training)
+        testing = self.image(blob=master.testing, scaler=scaler)
+
+        master._replace(training=training, testing=testing, scaler=scaler)
+
+        return master
