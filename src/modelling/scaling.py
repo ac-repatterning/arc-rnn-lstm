@@ -6,6 +6,7 @@ import pandas as pd
 import sklearn
 
 import src.elements.master as mr
+import src.elements.intermediary as itr
 
 
 class Scaling:
@@ -63,7 +64,7 @@ class Scaling:
 
         return self.__restructure(structure=blob, transforms=transforms)
 
-    def exc(self, master: mr.Master) -> mr.Master:
+    def exc(self, master: mr.Master) -> itr.Intermediary:
         """
 
         :param master: Refer to src.elements.master
@@ -73,6 +74,6 @@ class Scaling:
         training, scaler = self.preimage(blob=master.training)
         testing = self.image(blob=master.testing, scaler=scaler)
 
-        master._replace(training=training, testing=testing, scaler=scaler)
+        intermediary = itr.Intermediary(training=training, testing=testing, scaler=scaler)
 
-        return master
+        return intermediary
