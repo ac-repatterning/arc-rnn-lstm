@@ -5,20 +5,24 @@ import sklearn
 
 
 class Scaling:
+    """
+    Minimum Maximum Scaling
+    """
 
-    def __init__(self, features__: list) -> None:
+    def __init__(self, arguments: dict):
         """
 
-        :param features__: The fields that would undergo scaling
+        :param arguments: A set of arguments vis-à-vis calculation & storage objectives.
         """
 
-        self.__features = features__
+        self.__features = arguments.get('scaling').get('features')
 
     def __restructure(self, structure: pd.DataFrame, transforms: np.ndarray):
         """
 
-        :param structure:
-        :param transforms:
+        :param structure: The dataframe the transforms apply to
+        :param transforms: The scaled forms of the fields of self.__features
+        :return:
         """
 
         __data = structure.drop(columns=self.__features)
@@ -45,9 +49,10 @@ class Scaling:
 
     def exc(self, blob: pd.DataFrame, scaler: sklearn.preprocessing.MinMaxScaler):
         """
+        For transforming data sets associated with the training data that built the scaler
 
         :param blob:
-        :param scaler:
+        :param scaler: A scaler object
         """
 
         transforms = scaler.transform(blob.copy()[self.__features])
