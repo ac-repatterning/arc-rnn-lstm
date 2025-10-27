@@ -16,10 +16,6 @@ class Master(typing.NamedTuple):
 
     <b>testing</b> : pandas.DataFrame
         The testing data of a gauge<br>
-
-    <b>scaler</b> : sklearn.preprocessing.MinMaxScaler
-        The scaler object<br>
-
     """
 
     training: pd.DataFrame
