@@ -1,3 +1,4 @@
+"""Module scaling.py"""
 import typing
 
 import numpy as np
