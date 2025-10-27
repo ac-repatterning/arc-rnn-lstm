@@ -24,4 +24,3 @@ class Master(typing.NamedTuple):
 
     training: pd.DataFrame
     testing: pd.DataFrame
-    scaler: sklearn.preprocessing.MinMaxScaler = None
