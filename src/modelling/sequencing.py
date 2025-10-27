@@ -2,6 +2,8 @@
 import numpy as np
 import pandas as pd
 
+import typing
+
 
 class Sequencing:
     """
@@ -18,7 +20,7 @@ class Sequencing:
         self.__fields = arguments.get('modelling').get('fields')
         self.__targets = arguments.get('modelling').get('targets')
 
-    def exc(self, blob: pd.DataFrame):
+    def exc(self, blob: pd.DataFrame) -> typing.Tuple[np.ndarray, np.ndarray]:
         """
 
         :param blob: A modelling data set
