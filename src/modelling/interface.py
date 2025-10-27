@@ -5,6 +5,7 @@ import dask
 import pandas as pd
 
 import src.elements.master as mr
+import src.elements.intermediary as itr
 import src.elements.partitions as pr
 import src.modelling.architecture
 import src.modelling.data
@@ -60,10 +61,10 @@ class Interface:
         for partition in partitions:
             listing = self.__get_listing(ts_id=partition.ts_id)
             data = __data(listing=listing)
-            __master: mr.Master = __get_splits(data=data, partition=partition)
-            master: mr.Master = __scaling.exc(master=__master)
-            inference = __architecture(master=master)
-            message = __persist(inference=inference, partition=partition)
+            master: mr.Master = __get_splits(data=data, partition=partition)
+            intermediary: itr.Intermediary = __scaling.exc(master=master)
+
+            message = ...
             computations.append(message)
         latest = dask.compute(computations, scheduler='threads')[0]
 
