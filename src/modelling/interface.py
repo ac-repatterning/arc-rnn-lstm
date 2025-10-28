@@ -4,16 +4,14 @@ import logging
 import dask
 import pandas as pd
 
-import tensorflow as tf
-
 import src.elements.intermediary as itr
 import src.elements.master as mr
 import src.elements.partitions as pr
 import src.modelling.architecture
+import src.modelling.artefacts
 import src.modelling.data
 import src.modelling.scaling
 import src.modelling.split
-import src.modelling.artefacts
 
 
 class Interface:
@@ -68,8 +66,7 @@ class Interface:
             data = __data(listing=listing)
             master: mr.Master = __get_splits(data=data, partition=partition)
             intermediary: itr.Intermediary = self.__scaling(master=master)
-            model: tf.keras.models.Sequential = self.__architecture(intermediary=intermediary)
-            message = self.__artefacts(model=model, intermediary=intermediary, master=master)
+            message = self.__architecture(intermediary=intermediary)
             computations.append(message)
         messages = dask.compute(computations, scheduler='threads')[0]
 
