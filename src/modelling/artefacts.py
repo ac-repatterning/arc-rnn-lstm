@@ -6,6 +6,7 @@ import sklearn
 import tensorflow as tf
 
 import src.functions.streams
+import src.functions.objects
 
 
 class Artefacts:
@@ -26,6 +27,25 @@ class Artefacts:
 
         # Instances
         self.__streams = src.functions.streams.Streams()
+        self.__objects = src.functions.objects.Objects()
+
+    def __scaling(self):
+        """
+        
+        :return:
+        """
+
+        values = {
+            'data_max_': list(self.__scaler.data_max_),
+            'data_min_': list(self.__scaler.data_min_),
+            'data_range_': list(self.__scaler.data_range_),
+            'feature_names_in_': list(self.__scaler.feature_names_in_),
+            'n_features_in_': self.__scaler.n_features_in_,
+            'feature_names_out': list(self.__scaler.get_feature_names_out()),
+            'n_samples_seen_': self.__scaler.n_samples_seen_
+        }
+
+        self.__objects.write(nodes=values, path=os.path.join(self.__path, 'scaling.json'))
 
     def __history(self):
         """
