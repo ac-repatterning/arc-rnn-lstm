@@ -6,7 +6,7 @@ import src.elements.intermediary as itr
 import src.elements.master as mr
 import src.elements.sequences as sq
 import src.modelling.sequencing
-import src.modelling.artefacts
+import src.modelling.estimates
 
 
 class Architecture:
@@ -25,8 +25,8 @@ class Architecture:
         self.__epochs = self.__arguments.get('modelling').get('epochs')
         self.__batch_size = self.__arguments.get('modelling').get('batch_size')
 
-        # Artefacts
-        self.__artefacts = src.modelling.artefacts.Artefacts(arguments=self.__arguments)
+        # Estimates
+        self.__estimates = src.modelling.estimates.Estimates(arguments=self.__arguments)
 
     def __get_sequences(self, intermediary: itr.Intermediary) -> sq.Sequences:
         """
@@ -84,6 +84,6 @@ class Architecture:
         model: tf.keras.models.Sequential = self.__model(x_tr=sequences.x_tr, y_tr=sequences.y_tr)
 
         # Hence
-        message = self.__artefacts.exc(model=model, sequences=sequences, intermediary=intermediary, master=master)
+        message = self.__estimates.exc(model=model, sequences=sequences, intermediary=intermediary, master=master)
 
         return message
