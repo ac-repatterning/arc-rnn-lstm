@@ -1,13 +1,14 @@
-
-import tensorflow as tf
-
+"""Module valuations.py"""
 import numpy as np
 import pandas as pd
 import sklearn
-
+import tensorflow as tf
 
 
 class Valuations:
+    """
+    Valuations
+    """
 
     def __init__(self, model: tf.keras.src.models.Sequential, scaler: sklearn.preprocessing.MinMaxScaler, arguments: dict):
         """
@@ -46,35 +47,42 @@ class Valuations:
 
         return fields, targets, disjoint
 
-    def __restructure(self, inverse: np.ndarray) -> pd.DataFrame:
+    def __get_design(self, structure: pd.DataFrame) -> pd.DataFrame:
         """
 
-        :param inverse:
+        :param structure:
         :return:
         """
 
+
+        data: np.ndarray = self.__scaler.inverse_transform(structure.values)
         frame = pd.DataFrame()
-        frame.loc[:, self.__features] = inverse
+        frame.loc[:, self.__features] = data
         frame.rename(columns=self.__rename, inplace=True)
 
         return frame
 
-    def exc(self, x_matrix: np.ndarray, frame: pd.DataFrame):
+    def exc(self, x_matrix: np.ndarray, original: pd.DataFrame):
         """
 
         :param x_matrix:
-        :param frame:
+        :param original:
         :return:
         """
 
         predictions: np.ndarray = self.__model.predict(x=x_matrix)
 
-        # The inverse transform structure
-        structure = frame.copy()[self.__disjoint][-x_matrix.shape[0]:]
+        # Points
+        n_points = x_matrix.shape[0]
+
+        # The expected inverse transform structure
+        structure = pd.DataFrame(data=x_matrix, columns=self.__features)
         structure.loc[:, self.__targets] = predictions
-        structure = structure.copy()[self.__features]
 
-        # Inverting
-        inverse: np.ndarray = self.__scaler.inverse_transform(structure.values)
+        # Re-scaled values
+        design = self.__get_design(structure=structure)
 
-        return self.__restructure(inverse=inverse.copy())
+
+        # Original & Estimates
+        __original = original[-n_points:]
+        instances = __original.copy().merge(design[list(self.__rename.values())], how='inner', on='timestamp')
