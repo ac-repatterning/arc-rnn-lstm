@@ -12,7 +12,7 @@ class Valuations:
     object's inverse transform function.  Consequently, predictions & original values can be compared.
     """
 
-    def __init__(self, model: tf.keras.src.models.Sequential, scaler: sklearn.preprocessing.MinMaxScaler, arguments: dict):
+    def __init__(self, model: tf.keras.models.Sequential, scaler: sklearn.preprocessing.MinMaxScaler, arguments: dict):
         """
 
         :param model:
