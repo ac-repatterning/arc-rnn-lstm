@@ -1,20 +1,13 @@
 """Module architecture.py"""
-import collections
-import logging
-import typing
-
 import numpy as np
-import pandas as pd
 import tensorflow as tf
-import tensorflow_probability as tfp
-import tensorflow_probability.python.experimental.util as tfu
-import tensorflow_probability.python.sts.components as tfc
-import tf_keras
 
-import src.elements.inference as ifr
+import src.elements.intermediary as itr
 import src.elements.master as mr
-import src.functions.streams
-import src.modelling.predicting
+import src.elements.sequences as sq
+import src.modelling.artefacts
+import src.modelling.estimates
+import src.modelling.sequencing
 
 
 class Architecture:
@@ -29,73 +22,71 @@ class Architecture:
         """
 
         self.__arguments = arguments
+        self.__patience = self.__arguments.get('modelling').get('patience')
+        self.__epochs = self.__arguments.get('modelling').get('epochs')
+        self.__batch_size = self.__arguments.get('modelling').get('batch_size')
 
-    def __model(self, _training: np.ndarray) -> tfc.Sum:
+        # Estimates
+        self.__estimates = src.modelling.estimates.Estimates(arguments=self.__arguments)
+
+    def __get_sequences(self, intermediary: itr.Intermediary) -> sq.Sequences:
         """
 
-        :param _training:
+        :param intermediary:
         :return:
         """
 
-        month_of_year_effect = tfp.sts.Seasonal(
-            num_seasons=self.__arguments.get('seasons').get('number_of'),
-            num_steps_per_season=self.__arguments.get('seasons').get('steps_per'),
-            observed_time_series=_training,
-            name='month_of_year_effect')
+        seq = src.modelling.sequencing.Sequencing(arguments=self.__arguments)
+        x_tr, y_tr = seq.exc(blob=intermediary.training)
+        x_te, y_te = seq.exc(blob=intermediary.testing)
 
-        autoregressive = tfp.sts.Autoregressive(order=1, observed_time_series=_training, name='autoregressive')
+        return sq.Sequences(x_tr=x_tr, y_tr=y_tr, x_te=x_te, y_te=y_te)
 
-        model = tfp.sts.Sum([month_of_year_effect, autoregressive],
-                            observed_time_series=_training)
-
-        return model
-
-    def __variational(self, model, _training: np.ndarray) -> typing.Tuple[tfu.DeferredModule, pd.DataFrame]:
+    # noinspection PyUnresolvedReferences
+    def __model(self, x_tr: np.ndarray, y_tr: np.ndarray) -> tf.keras.models.Sequential:
         """
 
-        :param model:
-        :param _training:
+        :param x_tr:
+        :param y_tr:
         :return:
         """
 
-        posterior: tfu.DeferredModule = tfp.sts.build_factored_surrogate_posterior(
-            model=model)
+        architecture = tf.keras.models.Sequential()
+        architecture.add(tf.keras.layers.Input(shape=(x_tr.shape[1], x_tr.shape[2])))
+        architecture.add(tf.keras.layers.LSTM(units=128, return_sequences=True))
+        architecture.add(tf.keras.layers.LSTM(units=64, return_sequences=False))
+        architecture.add(tf.keras.layers.Dense(units=1))
 
-        # Evidence Lower Bound Loss Curve Data
-        elb: tf.Tensor = tfp.vi.fit_surrogate_posterior(
-            target_log_prob_fn=model.joint_distribution(observed_time_series=_training).log_prob,
-            surrogate_posterior=posterior,
-            optimizer=tf_keras.optimizers.Adam(learning_rate=self.__arguments.get('learning_rate')),
-            num_steps=self.__arguments.get('n_variational_steps'),
-            jit_compile=True,
-            seed=self.__arguments.get('seed'),
-            name='fit_surrogate_posterior')
-        logging.info('Evidence Lower Bound: %s', type(elb))
+        # loss w.r.t. training data
+        early_stopping = tf.keras.callbacks.EarlyStopping(
+            monitor='loss', patience=self.__patience, mode='min')
 
-        _elb = pd.DataFrame(data={
-            'index': np.arange(elb.numpy().shape[0]),
-            'evidence_lower_bound': elb.numpy()})
+        architecture.compile(
+            loss=tf.keras.losses.MeanSquaredError(), optimizer=tf.keras.optimizers.Adam(),
+            metrics=[tf.keras.metrics.RootMeanSquaredError()])
 
-        return posterior, _elb
+        architecture.fit(
+            x=x_tr, y=y_tr, epochs=self.__epochs, batch_size=self.__batch_size, callbacks=[early_stopping])
 
-    def exc(self, master: mr.Master) -> ifr.Inference:
+        return architecture
+
+    def exc(self, master: mr.Master, intermediary: itr.Intermediary) -> str:
         """
 
         :param master:
+        :param intermediary:
         :return:
         """
 
-        # Model
-        model: tfc.Sum = self.__model(_training=master.training['measure'].values)
+        sequences = self.__get_sequences(intermediary=intermediary)
 
-        # Posteriors & Evidence Lower Bound
-        v_posterior, v_elb = self.__variational(model=model, _training=master.training['measure'].values)
-
-        # Samples
-        v_posterior_samples: collections.OrderedDict = v_posterior.sample(self.__arguments.get('n_samples'))
+        # Modelling
+        model: tf.keras.models.Sequential = self.__model(x_tr=sequences.x_tr, y_tr=sequences.y_tr)
 
         # Hence
-        v_estimates = src.modelling.predicting.Predicting(arguments=self.__arguments).exc(
-            master=master, model=model, v_posterior_samples=v_posterior_samples)
+        src.modelling.artefacts.Artefacts(
+            model=model, scaler=intermediary.scaler, arguments=self.__arguments, path=master.path).exc()
+        self.__estimates.exc(
+            model=model, sequences=sequences, intermediary=intermediary, master=master)
 
-        return ifr.Inference(evidence_lower_bound=v_elb, estimates=v_estimates)
+        return '/'.join(master.path.rsplit(sep='/', maxsplit=2)[-2:])

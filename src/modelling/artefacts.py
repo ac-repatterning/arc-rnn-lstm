@@ -1,0 +1,92 @@
+"""Module artefacts.py"""
+import logging
+import os
+
+import pandas as pd
+import sklearn
+import tensorflow as tf
+
+import src.functions.objects
+import src.functions.streams
+
+
+class Artefacts:
+    """
+    Artefacts
+    """
+
+    def __init__(self, model: tf.keras.models.Sequential, scaler: sklearn.preprocessing.MinMaxScaler,
+                 arguments: dict, path: str):
+        """
+
+        :param arguments: A set of arguments vis-à-vis calculation & storage objectives.
+        """
+
+        self.__model = model
+        self.__scaler = scaler
+        self.__arguments = arguments
+        self.__path = path
+
+        # Instances
+        self.__streams = src.functions.streams.Streams()
+        self.__objects = src.functions.objects.Objects()
+
+    def __modelling(self) -> str:
+        """
+
+        :return:
+        """
+
+        elements: dict = self.__arguments.get('modelling')
+
+        values = {
+            'fields': elements.get('fields'), 'targets': elements.get('targets'),
+            'epochs': self.__model.history.params.get('epochs'),
+            'batch_size': elements.get('batch_size')
+        }
+
+        return self.__objects.write(nodes=values, path=os.path.join(self.__path, 'modelling.json'))
+
+    def __history(self) -> str:
+        """
+
+        :return:
+        """
+
+        history = pd.DataFrame(data=self.__model.history.history)
+
+        return self.__streams.write(blob=history, path=os.path.join(self.__path, 'history.csv'))
+
+    def __scaling(self) -> str:
+        """
+
+        :return:
+        """
+
+        values = {
+            'data_max_': list(self.__scaler.data_max_), 'data_min_': list(self.__scaler.data_min_),
+            'data_range_': list(self.__scaler.data_range_),
+            'feature_names_in_': list(self.__scaler.feature_names_in_),
+            'n_features_in_': self.__scaler.n_features_in_,
+            'feature_names_out': list(self.__scaler.get_feature_names_out()),
+            'n_samples_seen_': self.__scaler.n_samples_seen_
+        }
+
+        return self.__objects.write(nodes=values, path=os.path.join(self.__path, 'scaling.json'))
+
+    def exc(self) -> None:
+        """
+
+        :return:
+        """
+
+        try:
+            self.__model.save(filepath=os.path.join(self.__path, 'model.keras'), overwrite=True)
+        except OSError as err:
+            raise err from err
+
+        self.__modelling()
+        self.__history()
+        self.__scaling()
+
+        logging.info('%s artefacts: succeeded', os.path.basename(self.__path))

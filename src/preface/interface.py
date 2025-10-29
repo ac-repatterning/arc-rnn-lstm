@@ -37,7 +37,7 @@ class Interface:
 
         return arguments
 
-    def exc(self) -> typing.Tuple[boto3.session.Session, s3p.S3Parameters, sr.Service, dict]:
+    def exc(self, codes: list[int] | None) -> typing.Tuple[boto3.session.Session, s3p.S3Parameters, sr.Service, dict]:
         """
 
         :return:
@@ -49,10 +49,12 @@ class Interface:
         arguments: dict = self.__get_arguments(connector=connector)
 
         # Interaction Instances: Amazon
-        s3_parameters: s3p.S3Parameters = src.s3.s3_parameters.S3Parameters(
-            connector=connector, project_key_name=arguments.get('project_key_name')).exc()
+        s3_parameters: s3p.S3Parameters = src.s3.s3_parameters.S3Parameters(connector=connector,).exc()
         service: sr.Service = src.functions.service.Service(
             connector=connector, region_name=s3_parameters.region_name).exc()
+
+        if codes is not None:
+            arguments['series']['excerpt'] = codes
 
         src.preface.setup.Setup(service=service, s3_parameters=s3_parameters).exc()
 

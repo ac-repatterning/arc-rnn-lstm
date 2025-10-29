@@ -1,4 +1,5 @@
 """Module main.py"""
+import argparse
 import datetime
 import logging
 import os
@@ -24,6 +25,8 @@ def main():
     # partitions: catchment & time series codes, listings: list of files and supplementary data
     partitions, listings = src.assets.interface.Interface(
         service=service, s3_parameters=s3_parameters, arguments=arguments).exc()
+    logger.info(partitions)
+    logger.info(listings)
 
     # Modelling
     src.modelling.interface.Interface(
@@ -55,13 +58,20 @@ if __name__ == '__main__':
     import src.functions.cache
     import src.modelling.interface
     import src.preface.interface
+    import src.specific
     import src.transfer.interface
+
+    specific = src.specific.Specific()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--codes', type=specific.codes,
+                        help='Expects a string of one or more comma separated gauge time series codes.')
+    args = parser.parse_args()
 
     connector: boto3.session.Session
     s3_parameters: s3p.S3Parameters
     service: sr.Service
     arguments: dict
-    connector, s3_parameters, service, arguments = src.preface.interface.Interface().exc()
+    connector, s3_parameters, service, arguments = src.preface.interface.Interface().exc(codes=args.codes)
 
     # Devices
     os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
@@ -69,6 +79,6 @@ if __name__ == '__main__':
 
     if arguments.get('cpu') | (not gpu):
         os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-        tf.config.set_visible_devices([], 'GPU')
+        tf.config.set_visible_devices([], 'CPU')
 
     main()
