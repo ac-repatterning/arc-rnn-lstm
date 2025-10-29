@@ -42,7 +42,7 @@ Subsequently, run a container, i.e., an instance, of the image `posteriors` via 
 <br>
 
 ```shell
-docker run --rm --gpus all --shm-size=16gb -i -t 
+docker run --rm --gpus all -i -t 
   -p 8000:8000 -p 8888:8888   
     -w /app --mount type=bind,src="$(pwd)",target=/app 
       -v ~/.aws:/root/.aws posteriors
