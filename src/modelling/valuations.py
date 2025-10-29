@@ -8,6 +8,11 @@ import sklearn
 
 
 class Valuations:
+    """
+    This class extracts the raw predictions of a developed model w.r.t. (with respect to) the model's training data,
+    and the model development task's testing data.  Subsequently, the predictions are re-scaled via the applicable scaling
+    object's inverse transform function.  Consequently, predictions & original values can be compared.
+    """
 
     def __init__(self, model: tf.keras.src.models.Sequential, scaler: sklearn.preprocessing.MinMaxScaler, arguments: dict):
         """
