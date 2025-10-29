@@ -33,7 +33,8 @@ class Interface:
         self.__configurations = config.Config()
 
         # Metadata dictionary
-        self.__metadata = src.transfer.metadata.Metadata(connector=connector).exc(architecture='latest')
+        self.__metadata = src.transfer.metadata.Metadata(
+            connector=connector).exc(architecture=self.__configurations.architecture)
 
     def __set_metadata(self, frame: pd.DataFrame) -> pd.DataFrame:
         """
@@ -69,5 +70,5 @@ class Interface:
             logging.info(strings)
             messages = src.s3.ingress.Ingress(
                 service=self.__service, bucket_name=self.__s3_parameters.internal).exc(
-                strings=strings, tags={'project': 'hydrography'})
+                strings=strings, tags={'project': self.__configurations.project_tag})
             logging.info(messages)
