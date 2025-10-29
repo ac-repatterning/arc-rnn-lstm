@@ -40,7 +40,7 @@ class Estimates:
 
         logging.info(message)
 
-    def exc(self, model: tf.keras.src.models.Sequential, sequences: sq.Sequences,
+    def exc(self, model: tf.keras.models.Sequential, sequences: sq.Sequences,
             intermediary: itr.Intermediary, master: mr.Master) -> None:
         """
 
