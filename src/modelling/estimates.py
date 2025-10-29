@@ -32,4 +32,10 @@ class Estimates:
 
         valuations = src.modelling.valuations.Valuations(model=model, scaler=intermediary.scaler, arguments=self.__arguments)
 
+        # training
+        valuations.exc(x_matrix=sequences.x_tr, design=intermediary.training, original=master.training)
+
+        # testing
+        valuations.exc(x_matrix=sequences.x_te, design=intermediary.testing, original=master.testing)
+
         return 'in progress'
