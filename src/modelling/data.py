@@ -60,6 +60,8 @@ class Data:
 
     def exc(self, listing: list[str]) -> pd.DataFrame:
         """
+        Append a date of the format datetime64[]
+        data['date'] = pd.to_datetime(data['timestamp'], unit='ms')
 
         :param listing:
         :return:
@@ -71,8 +73,5 @@ class Data:
 
         # Filter
         data = data.copy().loc[data['timestamp'] >= self.__as_from, :]
-
-        # Append a date of the format datetime64[]
-        data['date'] = pd.to_datetime(data['timestamp'], unit='ms')
 
         return data
