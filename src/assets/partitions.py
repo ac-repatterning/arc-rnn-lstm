@@ -5,6 +5,7 @@ import sys
 import typing
 
 import pandas as pd
+import numpy as np
 
 import src.functions.cache
 
@@ -14,16 +15,14 @@ class Partitions:
     Partitions for parallel computation.
     """
 
-    def __init__(self, gauges: pd.DataFrame, foci: pd.DataFrame, arguments: dict):
+    def __init__(self, gauges: pd.DataFrame, arguments: dict):
         """
 
         :param gauges:
-        :param foci:
         :param arguments:
         """
 
         self.__gauges = gauges
-        self.__foci = foci
         self.__arguments = arguments
 
     def __limits(self):
@@ -54,16 +53,21 @@ class Partitions:
 
         # The years in focus, via the year start date, e.g., 2023-01-01
         limits = self.__limits()
+        logging.info(limits)
 
-        # Inspecting ...
-        codes = self.__gauges.merge(self.__foci[['catchment_id', 'ts_id']], how='right', on=['catchment_id', 'ts_id'])
-        if codes.shape[0] == 0:
-            logging.info('None valid codes.')
-            src.functions.cache.Cache().exc()
-            sys.exit(0)
+        # Focusing on ...
+        excerpt = self.__arguments.get('series').get('excerpt')
+        if excerpt is None:
+            gauges =  self.__gauges
+        else:
+            codes = np.unique(np.array(excerpt))
+            gauges = self.__gauges.copy().loc[self.__gauges['ts_id'].isin(codes), :]
+            gauges = gauges if gauges.shape[0] > 0 else self.__gauges
 
         # Hence, the gauges in focus vis-à-vis the years in focus
-        listings = limits.merge(codes, how='left', on='date')
+        listings = limits.merge(gauges, how='left', on='date')
+
+        # ...
         partitions = listings[['catchment_id', 'ts_id']].drop_duplicates()
 
         return partitions, listings
