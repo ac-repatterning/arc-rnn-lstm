@@ -1,10 +1,8 @@
-
-import tensorflow as tf
-
+"""Module valuations.py"""
 import numpy as np
 import pandas as pd
 import sklearn
-
+import tensorflow as tf
 
 
 class Valuations:
@@ -70,7 +68,7 @@ class Valuations:
 
         :param x_matrix: A matrix of sequences
         :param design: Where applicable, the feature fields are scaled
-        :param original: cf. design, the feature
+        :param original: cf. design
         :return:
         """
 
