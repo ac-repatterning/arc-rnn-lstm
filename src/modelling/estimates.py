@@ -1,13 +1,15 @@
-import os
+"""Module estimates.py"""
 import logging
+import os
+
 import pandas as pd
 import tensorflow as tf
 
 import src.elements.intermediary as itr
 import src.elements.master as mr
 import src.elements.sequences as sq
-import src.modelling.valuations
 import src.functions.streams
+import src.modelling.valuations
 
 
 class Estimates:
