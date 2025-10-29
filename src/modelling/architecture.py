@@ -6,8 +6,8 @@ import src.elements.intermediary as itr
 import src.elements.master as mr
 import src.elements.sequences as sq
 import src.modelling.artefacts
-import src.modelling.sequencing
 import src.modelling.estimates
+import src.modelling.sequencing
 
 
 class Architecture:
