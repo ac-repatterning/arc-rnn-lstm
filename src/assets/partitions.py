@@ -1,13 +1,10 @@
 """Module partitions.py"""
 import datetime
 import logging
-import sys
 import typing
 
-import pandas as pd
 import numpy as np
-
-import src.functions.cache
+import pandas as pd
 
 
 class Partitions:
