@@ -73,7 +73,7 @@ if __name__ == '__main__':
     arguments: dict
     connector, s3_parameters, service, arguments = src.preface.interface.Interface().exc(codes=args.codes)
 
-     # Devices
+    # Devices
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     gpu = tf.config.list_physical_devices('GPU')
 
