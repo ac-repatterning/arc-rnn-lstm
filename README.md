@@ -9,8 +9,9 @@ Develop<br>
 <br>
 <br>
 
-* <b>Function</b>: Develops river level forecasting models, per gauge area, via river level gauge measures across Scotland.
-* <b>Underlying Algorithm</b>: Long Short-Term Memory Recurrent Neural
+**Note** &Rarr;
+* Function: Develops river level forecasting models, per gauge area, via river level gauge measures across Scotland.
+* Underlying Algorithm: Long Short-Term Memory Recurrent Neural
 
 <br>
 <br>
