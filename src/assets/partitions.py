@@ -53,12 +53,12 @@ class Partitions:
         logging.info(limits)
 
         # Focusing on ...
-        excerpt = self.__arguments.get('series').get('excerpt')
+        excerpt = self.__arguments.get('catchments').get('excerpt')
         if excerpt is None:
             gauges =  self.__gauges
         else:
             codes = np.unique(np.array(excerpt))
-            gauges = self.__gauges.copy().loc[self.__gauges['ts_id'].isin(codes), :]
+            gauges = self.__gauges.copy().loc[self.__gauges['catchment_id'].isin(codes), :]
             gauges = gauges if gauges.shape[0] > 0 else self.__gauges
 
         # Hence, the gauges in focus vis-à-vis the years in focus
