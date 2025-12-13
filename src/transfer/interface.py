@@ -34,7 +34,7 @@ class Interface:
 
         # Metadata dictionary
         self.__metadata = src.transfer.metadata.Metadata(
-            connector=connector).exc(architecture=self.__configurations.architecture)
+            connector=connector).exc()
 
     def __set_metadata(self, frame: pd.DataFrame) -> pd.DataFrame:
         """
