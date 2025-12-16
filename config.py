@@ -20,6 +20,9 @@ class Config:
         Variables denoting a path - including or excluding a filename - have an underscore suffix; this suffix is
         excluded for names such as warehouse, storage, depository, *key, etc.<br><br>
 
+        Over time, step-by-step, some of the items herein will be transferred to the overarching project's
+        configurations zone/hub.
+
         """
 
         '''
