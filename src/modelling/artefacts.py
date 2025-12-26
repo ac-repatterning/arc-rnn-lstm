@@ -35,9 +35,10 @@ class Artefacts:
         self.__streams = src.functions.streams.Streams()
         self.__objects = src.functions.objects.Objects()
 
-    def __modelling(self) -> str:
+    def __modelling(self, hyperparameters: dict) -> str:
         """
 
+        :param hyperparameters:
         :return:
         """
 
@@ -47,7 +48,8 @@ class Artefacts:
             'fields': elements.get('fields'), 'targets': elements.get('targets'),
             'n_sequence': self.__arguments.get('n_sequence'),
             'epochs': self.__model.history.params.get('epochs'),
-            'batch_size': elements.get('batch_size'),
+            'units': hyperparameters.get('units'),
+            'batch_size': hyperparameters.get('batch_size'),
             'training_starts': {
                 'epoch_milliseconds': self.__starting.epoch_milliseconds,
                 'string': self.__starting.string
@@ -83,9 +85,10 @@ class Artefacts:
 
         return self.__objects.write(nodes=values, path=os.path.join(self.__path, 'scaling.json'))
 
-    def exc(self) -> None:
+    def exc(self, hyperparameters: dict) -> None:
         """
 
+        :param hyperparameters:
         :return:
         """
 
@@ -94,7 +97,7 @@ class Artefacts:
         except OSError as err:
             raise err from err
 
-        self.__modelling()
+        self.__modelling(hyperparameters=hyperparameters)
         self.__history()
         self.__scaling()
 
