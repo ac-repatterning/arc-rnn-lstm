@@ -33,11 +33,13 @@ class Config:
         self.arguments_key = f'architectures/{self.architecture}/arguments.json'
         self.metadata = f'architectures/{self.architecture}/metadata.json'
 
+
         '''
         Project Metadata
         '''
         self.project_tag = 'hydrography'
         self.project_key_name = 'HydrographyProject'
+
 
         '''
         Local Paths
@@ -46,7 +48,8 @@ class Config:
         self.warehouse: str = os.path.join(os.getcwd(), 'warehouse')
         self.assets_ = os.path.join(self.warehouse, *sections)
 
+
         '''
-        Cloud
+        Cloud Prefix: Destination
         '''
         self.prefix = '/'.join(sections)
