@@ -33,7 +33,9 @@ class Interface:
 
         key_name = self.__configurations.arguments_key
 
-        arguments = src.s3.configurations.Configurations(connector=connector).objects(key_name=key_name)
+        arguments: dict = src.s3.configurations.Configurations(connector=connector).objects(key_name=key_name)
+        arguments['prefix'] = {
+            'destination': arguments.get('inference').get('inspect').get('source')}
 
         return arguments
 
