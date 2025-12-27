@@ -44,12 +44,5 @@ class Config:
         '''
         Local Paths
         '''
-        sections = ['assets-t', self.architecture]
         self.warehouse: str = os.path.join(os.getcwd(), 'warehouse')
-        self.assets_ = os.path.join(self.warehouse, *sections)
-
-
-        '''
-        Cloud Prefix: Destination
-        '''
-        self.prefix = '/'.join(sections)
+        self.pathway_ = os.path.join(self.warehouse, 'arc-rnn-lstm')
