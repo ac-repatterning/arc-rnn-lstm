@@ -93,7 +93,7 @@ class Artefacts:
         """
 
         try:
-            self.__model.save(filepath=os.path.join(self.__path, 'model.keras'), overwrite=True)
+            self.__model.save(filepath=os.path.join(self.__path, 'model'), overwrite=True, zipped=False)
         except OSError as err:
             raise err from err
 
